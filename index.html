@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏德战争历史可视化</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:;base64,=">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body>
+    <audio id="theme-music" src="assets/theme.mp3" loop></audio>
+    <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+    <audio id="sfx-boom" src="assets/boom.mp3"></audio>
+
+    <div id="entry-screen">
+        <div class="entry-content">
+            <div class="flags-container">
+                <img src="assets/flag_germany.png" alt="Germany" class="flag">
+                <span class="vs-text">VS</span>
+                <img src="assets/flag_ussr.png" alt="USSR" class="flag">
+            </div>
+            <h1 class="entry-title">钢铁与雪</h1>
+            <p class="entry-subtitle">苏德战争全景推演 (1941 - 1945)</p>
+            <div class="entry-desc">
+                <p><strong>【背景概述】：</strong>1941年6月22日，纳粹德国撕毁《苏德互不侵犯条约》，集结超300万兵力发动“巴巴罗萨行动”。这是人类历史上规模最大、伤亡最惨重、战况最惨烈的现代化战争。
+                </p>
+                <p><strong>【历史定论】：</strong>作为第二次世界大战欧洲战场的决定性部分，这场战争彻底粉碎了法西斯德国不可战胜的神话，并最终将其摧毁。数千万军民在这片东欧冻土上长眠。</p>
+            </div>
+            <button id="start-btn">开启历史档案</button>
+        </div>
+    </div>
+
+    <div id="map-container"></div>
+
+    <div id="ui-layer">
+        <div id="cinematic-overlay"></div>
+
+        <div id="stage-text-overlay">战争阶段：初始化中...</div>
+
+        <div id="left-controls">
+            <button id="btn-summary" class="rect-btn" title="查看战争历史总结与启示">历史总结与启示</button>
+        </div>
+
+        <div id="info-card">
+            <div class="card-header">
+                <h2 id="card-time">1941.06</h2>
+                <h1 id="card-title">巴巴罗萨计划</h1>
+            </div>
+            <div id="card-desc">...</div>
+        </div>
+
+        <div id="top-right-controls">
+            <div class="compass-custom">
+                <img src="assets/compass.png" alt="N">
+            </div>
+            <div class="audio-toggles">
+                <button id="toggle-music" class="circle-btn" title="开启/关闭音乐"><img src="assets/note.png"
+                        alt="Music"></button>
+                <button id="toggle-sfx" class="circle-btn" title="开启/关闭音效"><img src="assets/sound.png"
+                        alt="SFX"></button>
+            </div>
+        </div>
+
+        <div id="bottom-left-controls">
+            <div class="legend">
+                <div class="legend-item"><span class="color-circle" style="background:#cc0000;"></span> 核心战役坐标</div>
+                <div class="legend-item"><span class="color-circle" style="background:#f7dd5b;"></span> 胜利代表坐标</div>
+                <div class="legend-item"><span class="color-box" style="background:#1a1a1a;"></span> 轴心国进军路线</div>
+                <div class="legend-item"><span class="color-box" style="background:#a52a2a;"></span> 同盟国反攻路线</div>
+            </div>
+            <div class="scale-bar">
+                <div class="scale-line-simple"></div>
+                <div class="scale-text-simple">
+                    <span>0</span><span>500</span><span>1000 km</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="global-panel">
+            <div class="global-panel-header">全局统计与情报 <span>▼</span></div>
+            <div class="global-panel-content">
+                <button class="accordion">统帅与核心将领</button>
+                <div class="panel">
+                    <div class="portrait-container">
+                        <div class="portrait-item">
+                            <img src="assets/pic_hitler.jpg" alt="Hitler">
+                            <span>希特勒 (轴心国)</span>
+                        </div>
+                        <div class="portrait-item">
+                            <img src="assets/pic_stalin.jpg" alt="Stalin">
+                            <span>斯大林 (同盟国)</span>
+                        </div>
+                    </div>
+                    <p><b>轴心国统帅部：</b>除希特勒外，曼施坦因、古德里安、保卢斯、莫德尔等将领在东线执行了闪电战与残酷的焦土政策。<br><b>苏联最高统帅部：</b>在斯大林的领导下，朱可夫、罗科索夫斯基、科涅夫、华西列夫斯基等名将逐渐成熟，指挥了震撼世界的大纵深反攻。
+                    </p>
+                </div>
+
+                <button class="accordion">累计动员兵力规模</button>
+                <div class="panel">
+                    <p>苏德战争构成了人类史上最庞大的陆军对决。纳粹德国及其盟国累计投入了逾千万兵力；而苏联为了挽救国家危亡，在四年间史无前例地动员了超过3400万军民奔赴前线。</p>
+                    <div id="chart-troops" style="width: 100%; height: 180px;"></div>
+                </div>
+
+                <button class="accordion">惨烈伤亡统计</button>
+                <div class="panel">
+                    <p>二战欧洲战场80%以上的战斗发生于此，堪称巨大的绞肉机。苏军付出近870万将士阵亡的代价，平民遇难超1700万；轴心国在东线的阵亡与失踪人数亦突破500万。这片冻土吞噬了无数生命。</p>
+                    <div id="chart-casualties" style="width: 100%; height: 220px;"></div>
+                </div>
+
+                <button class="accordion">结果与意义</button>
+                <div class="panel">
+                    <p><b>红旗插上帝国大厦：</b>苏联以难以想象的惨痛代价，几乎凭借一己之力摧毁了纳粹德国绝大部分的军事机器。东线的胜利不仅捍卫了民族生存，更是粉碎全球法西斯图谋、奠定反法西斯战争最终胜利的最关键基石。
+                    </p>
+                    <img src="assets/pic_reichstag.jpg" class="panel-image" alt="Raising Flag">
+                    <p><i>图：红旗插上柏林国会大厦，宣告纳粹德国覆灭。</i></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="battle-modal">
+            <button id="close-modal">✖</button>
+            <button id="btn-wikipedia" title="打开维基百科">打开维基百科</button>
+            <h2 id="modal-title">战役名称</h2>
+            <div id="modal-content">档案详细内容...</div>
+        </div>
+
+        <div id="summary-modal">
+            <button id="close-summary-modal">✖</button>
+            <h2 class="summary-title">东方战线：历史总结与启示</h2>
+            <div class="summary-content">
+                <h3 class="summary-section-title">战役全局与终局回顾</h3>
+                <p>1941年6月22日至1945年5月9日，这场历时近四年的卫国战争，构成了第二次世界大战中规模最庞大、战况最激烈的核心战场。从巴巴罗萨计划那场突如其来的闪击狂潮，到莫斯科城下粉碎神话的严寒阻击；从斯大林格勒那座令人窒息的血肉磨坊，到库尔斯克平原上的钢铁对决，最终苏联红军势如破竹般跨过奥德河，将胜利的红旗牢牢插上了柏林国会大厦。纳粹德国的野心被彻底埋葬于此。
+                </p>
+                <h3 class="summary-section-title">深远的历史与战略意义</h3>
+                <p>作为世界反法西斯战争的决定性主战场，东方战线彻底埋葬了第三帝国的图谋。据史料统计，二战中德国武装力量近80%的损失均发生在这片广袤的东欧大地上。苏联军民以极其悲壮的牺牲精神，不仅挽救了国家危亡，更斩断了法西斯奴役欧洲的锁链，为拯救世界和平作出了不可磨灭的卓越贡献。战后的政治版图与国际新秩序，亦在这片焦土的废墟之上深深扎根。
+                </p>
+                <h3 class="summary-section-title">沉痛代价与和平警示</h3>
+                <p>战争的暴行给人类文明留下了永不愈合的伤疤。无数城市与村庄化为灰烬，数以千万计的无辜平民死于屠杀、饥饿与极端严寒。这场由极端种族主义和军国主义挑起的浩劫，用鲜血凝结成了沉重的历史教训。它永远警示着后人：必须时刻警惕极端霸权思想的死灰复燃。和平犹如脆弱的琉璃，唯有铭记这段钢铁与血火的历史，捍卫人类的共同底线，方能避免浩劫重演。
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

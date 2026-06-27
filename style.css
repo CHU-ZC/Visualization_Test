@@ -1,0 +1,630 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-image: url('assets/paper-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #d8cbb8;
+    overflow: hidden;
+    font-family: 'Times New Roman', serif;
+}
+
+#map-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    mix-blend-mode: multiply;
+    opacity: 0.9;
+    z-index: 1;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#cinematic-overlay {
+    position: absolute;
+    inset: 0;
+    background: #181817;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 30;
+    mix-blend-mode: screen;
+}
+
+/* 左侧总结按钮容器 */
+#left-controls {
+    position: absolute;
+    top: 35px;
+    left: 50px;
+    pointer-events: auto;
+    z-index: 20;
+}
+
+#info-card {
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    width: 380px;
+    background: rgba(230, 218, 195, 0.85);
+    border: 2px solid #544431;
+    border-radius: 4px;
+    padding: 25px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    backdrop-filter: blur(4px);
+}
+
+.card-header {
+    border-bottom: 2px solid #8c1c13;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+#card-time {
+    color: #8c1c13;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+#card-title {
+    color: #1a1a1a;
+    font-size: 32px;
+    line-height: 1.2;
+    margin-top: 5px;
+}
+
+#card-desc {
+    color: #333;
+    font-size: 16px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+#top-right-controls {
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.compass-custom {
+    width: 65px;
+    opacity: 0.85;
+    pointer-events: auto;
+    margin-bottom: 10px;
+    margin-right: 20px;
+}
+
+.compass-custom img {
+    width: 100%;
+    height: auto;
+}
+
+.audio-toggles {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    pointer-events: auto;
+}
+
+.circle-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(230, 218, 195, 0.85);
+    border: 2px solid #544431;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    opacity: 1;
+}
+
+.circle-btn img {
+    width: 55%;
+    height: 55%;
+    object-fit: contain;
+    opacity: 0.8;
+}
+
+.circle-btn:hover {
+    background: #8c1c13;
+}
+
+.circle-btn:hover img {
+    filter: invert(1);
+}
+
+.rect-btn {
+    background: rgba(230, 218, 195, 0.85);
+    border: 2px solid #544431;
+    color: #1a1a1a;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+    padding: 0 20px;
+    height: 45px;
+    cursor: pointer;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+.rect-btn:hover {
+    background: #8c1c13;
+    color: white;
+}
+
+#bottom-left-controls {
+    position: absolute;
+    bottom: 40px;
+    left: 65px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    pointer-events: none;
+}
+
+.legend {
+    background: rgba(230, 218, 195, 1.0);
+    border: 1px solid #544431;
+    padding: 15px;
+    border-radius: 4px;
+    pointer-events: auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.color-box {
+    width: 20px;
+    height: 5px;
+    display: inline-block;
+    border: 0.2px solid #000;
+}
+
+.color-circle {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border: 1px solid #000;
+    border-radius: 50%;
+}
+
+.scale-bar {
+    width: 220px;
+    pointer-events: auto;
+}
+
+.scale-line-simple {
+    height: 10px;
+    border-bottom: 2px solid #1a1a1a;
+    border-left: 2px solid #1a1a1a;
+    border-right: 2px solid #1a1a1a;
+    position: relative;
+}
+
+.scale-line-simple::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    height: 6px;
+    width: 2px;
+    background: #1a1a1a;
+}
+
+.scale-text-simple {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-top: 5px;
+    font-family: 'Times New Roman', serif;
+}
+
+#entry-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(12, 10, 9, 0.95);
+    backdrop-filter: blur(10px);
+    color: #d8cbb8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.entry-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 40px;
+    border: 1px solid #544431;
+    background: rgba(20, 15, 10, 0.8);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.flags-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.flag {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border: 2px solid #544431;
+    opacity: 0.8;
+}
+
+.vs-text {
+    font-size: 36px;
+    color: #8c1c13;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+}
+
+.entry-title {
+    font-size: 80px;
+    letter-spacing: 15px;
+    margin-bottom: 20px;
+    color: #8c1c13;
+    text-shadow: 0 0 20px rgba(140, 28, 19, 0.5);
+}
+
+.entry-subtitle {
+    font-size: 24px;
+    letter-spacing: 8px;
+    margin-bottom: 60px;
+    color: #78716c;
+}
+
+.entry-desc {
+    color: #a8a29e;
+    font-size: 16px;
+    line-height: 1.8;
+    text-align: left;
+    margin-bottom: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #544431;
+}
+
+#start-btn {
+    padding: 15px 50px;
+    font-size: 20px;
+    background: #8c1c13;
+    color: #d8cbb8;
+    border: none;
+    cursor: pointer;
+    font-family: 'Times New Roman', serif;
+    transition: all 0.3s;
+}
+
+#start-btn:hover {
+    background: #cc0000;
+    transform: scale(1.05);
+}
+
+#stage-text-overlay {
+    position: absolute;
+    top: 20px;
+    left: 51%;
+    transform: translateX(-50%);
+    color: #1a1a1a;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    font-family: 'Times New Roman', serif;
+    background: rgba(216, 203, 184, 0.7);
+    padding: 10px 38px;
+    border: 2px solid #544431;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 战役详情弹窗 */
+#battle-modal {
+    position: relative;
+    width: 460px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: url('assets/background.jpg');
+    background-size: cover;
+    border: 3px solid #3e2723;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+    display: none;
+    z-index: 50;
+}
+
+.modal-stamp {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #cc0000;
+    font-size: 24px;
+    font-weight: bold;
+    border: 3px solid #cc0000;
+    padding: 5px 10px;
+    transform: rotate(15deg);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+#modal-title {
+    color: #1a1a1a;
+    font-size: 36px;
+    border-bottom: 2px solid #544431;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+#modal-content {
+    color: #2c2c2c;
+    font-size: 18px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+#close-modal {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: #544431;
+    cursor: pointer;
+}
+
+#close-modal:hover {
+    color: #cc0000;
+}
+
+#btn-wikipedia {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: #000000cc;
+    color: #ffffff;
+    border: 1px solid #544431;
+    padding: 6px 14px;
+    font-size: 15px;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    display: none;
+    letter-spacing: 1px;
+}
+
+#btn-wikipedia:hover {
+    background: #cc0000;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(140, 28, 19, 0.6);
+}
+
+.modal-image {
+    width: 100%;
+    height: auto;
+    border: 2px solid #544431;
+    margin-bottom: 15px;
+    filter: sepia(0.4) contrast(1.1);
+}
+
+.modal-section-title {
+    color: #8c1c13;
+    border-bottom: 1px solid #544431;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
+/* 历史总结居中弹窗 */
+#summary-modal {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 750px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: url('assets/background.jpg');
+    background-size: cover;
+    border: 3px solid #3e2723;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+    pointer-events: auto;
+    display: none;
+    z-index: 100;
+    /* 层级最高 */
+}
+
+.summary-title {
+    color: #1a1a1a;
+    font-size: 32px;
+    border-bottom: 2px solid #8c1c13;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.summary-section-title {
+    color: #8c1c13;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #544431;
+    padding-bottom: 4px;
+}
+
+.summary-content p {
+    color: #2c2c2c;
+    font-size: 17px;
+    line-height: 1.8;
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+#close-summary-modal {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #544431;
+    cursor: pointer;
+}
+
+#close-summary-modal:hover {
+    color: #cc0000;
+}
+
+/* 右侧手风琴面板 */
+#global-panel {
+    position: absolute;
+    bottom: 12%;
+    right: 50px;
+    width: 380px;
+    background: rgba(230, 218, 195, 0.9);
+    border: 2px solid #544431;
+    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.global-panel-header {
+    background: #2c251e;
+    color: #d8cbb8;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.global-panel-content {
+    display: none;
+    padding: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.accordion {
+    background-color: transparent;
+    color: #1a1a1a;
+    cursor: pointer;
+    padding: 12px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #544431;
+    outline: none;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    transition: 0.3s;
+}
+
+.accordion:hover,
+.accordion.active {
+    color: #8c1c13;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.panel {
+    padding: 0 12px;
+    background-color: transparent;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.panel p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    margin: 10px 0;
+}
+
+.panel-image {
+    width: 100%;
+    height: auto;
+    border: 1px solid #544431;
+    margin-top: 10px;
+    border-radius: 2px;
+    filter: sepia(0.3) contrast(1.05);
+}
+
+.portrait-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+}
+
+.portrait-item {
+    text-align: center;
+    width: 45%;
+}
+
+.portrait-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: fill;
+    border: 2px solid #544431;
+    border-radius: 4px;
+    filter: grayscale(100%);
+}
+
+.portrait-item span {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #8c1c13;
+}
