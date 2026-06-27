@@ -4,7 +4,7 @@
 
 ---
 
-![入场界面](assets/screenshot_start.png)
+![入场界面](assets/Test.png)
 
 ## 📖 项目简介
 
